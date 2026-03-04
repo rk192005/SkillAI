@@ -152,7 +152,17 @@ function initForm() {
         const proc = document.getElementById('outProc'); proc.style.display = 'flex';
         document.getElementById('procRating').textContent = rating + '/5';
 
-        const steps = proc.querySelectorAll('.pl'); for (const s of steps) { s.classList.add('active'); await sleep(400); s.classList.remove('active'); s.classList.add('done'); } await sleep(300);
+        const procCareer = document.getElementById('procCareer');
+        const procResearch = document.getElementById('procResearch');
+        if (procCareer) procCareer.style.display = career ? 'flex' : 'none';
+        if (procResearch) procResearch.style.display = level === 'PhD' ? 'flex' : 'none';
+
+        const steps = proc.querySelectorAll('.pl');
+        for (const s of steps) {
+            if (s.style.display === 'none') continue;
+            s.classList.add('active'); await sleep(500); s.classList.remove('active'); s.classList.add('done');
+        }
+        await sleep(300);
 
         const C = getContent(sub, level), { improvement, confidence } = calcImprovement(rating, weak.length, scores), mode = getAdaptiveMode(rating);
 
@@ -181,7 +191,7 @@ function renderOverview(sub, rating, weak, scores, imp, conf, mode, C, level, ca
     const avg = scores.length ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(0) : '—';
     const lvBadge = level === 'PhD' ? '🎓 PhD Research' : level === 'PG' ? '🎓 M.Tech' : '📚 Undergraduate';
     const uniText = uni ? UNIVERSITIES[uni] : '';
-    document.getElementById('tp-overview').innerHTML = `<h3>📊 ${I18N[curLang].ovp} — ${sub}</h3>
+    document.getElementById('tp-overview').innerHTML = `<h3>📊 ${I18N[curLang].ovp} — ${sub} <span style="font-size:0.6em;color:#10B981;font-weight:400">[Coordinator]</span></h3>
     <div class="info-box ib-info" style="margin-bottom:12px">${lvBadge}${uniText ? ` · 🏫 ${uniText.split('—')[0]}` : ''}${career ? ` · 🎯 Career: ${career}` : ''}</div>
     <div class="ov-grid">
       <div class="ov-card"><div class="ov-icon">🎯</div><div class="ov-val">${rating}/5</div><div class="ov-lbl">Self Rating</div></div>
@@ -199,16 +209,16 @@ function renderOverview(sub, rating, weak, scores, imp, conf, mode, C, level, ca
 }
 
 function renderPlan(C, weak, rating) {
-    document.getElementById('tp-plan').innerHTML = `<h3>📅 7-Day Adaptive ${I18N[curLang].splan}</h3><table class="stable"><thead><tr><th>Day</th><th>Topic</th><th>Activities</th></tr></thead><tbody>${C.plan.map(d => `<tr><td><span class="day-b">Day ${d.day}</span></td><td style="font-weight:600;color:#E8ECF4">${d.topic}</td><td>${d.act}</td></tr>`).join('')}</tbody></table>`;
+    document.getElementById('tp-plan').innerHTML = `<h3>📅 7-Day Adaptive ${I18N[curLang].splan} <span style="font-size:0.6em;color:#10B981;font-weight:400">[Coordinator]</span></h3><table class="stable"><thead><tr><th>Day</th><th>Topic</th><th>Activities</th></tr></thead><tbody>${C.plan.map(d => `<tr><td><span class="day-b">Day ${d.day}</span></td><td style="font-weight:600;color:#E8ECF4">${d.topic}</td><td>${d.act}</td></tr>`).join('')}</tbody></table>`;
 }
 
 function renderQuestions(C, rating) {
-    document.getElementById('tp-questions').innerHTML = `<h3>❓ 10 Exam Questions</h3>${C.qs.map((q, i) => `<div class="qi"><div class="qi-n">${i + 1}</div><div class="qi-body"><div class="qi-text">${q.q}</div><div class="qi-tags"><span class="qi-tag qt-marks">${q.m}M</span><span class="qi-tag qt-${q.d.toLowerCase()}">${q.d}</span></div></div></div>`).join('')}`;
+    document.getElementById('tp-questions').innerHTML = `<h3>❓ 10 Exam Questions <span style="font-size:0.6em;color:#3B82F6;font-weight:400">[Practice Agent]</span></h3>${C.qs.map((q, i) => `<div class="qi"><div class="qi-n">${i + 1}</div><div class="qi-body"><div class="qi-text">${q.q}</div><div class="qi-tags"><span class="qi-tag qt-marks">${q.m}M</span><span class="qi-tag qt-${q.d.toLowerCase()}">${q.d}</span></div></div></div>`).join('')}`;
 }
 
 function renderMCQs(C) {
     window._mcq = { ans: new Set(), score: 0, total: C.mcqs.length };
-    document.getElementById('tp-mcq').innerHTML = `<h3>🎯 MCQ Quiz (${C.mcqs.length})</h3><p style="color:#4B5563;font-size:.78rem;margin-bottom:10px">Evaluate understanding instantly. Scores are tracked in Progress.</p>
+    document.getElementById('tp-mcq').innerHTML = `<h3>🎯 MCQ Quiz (${C.mcqs.length}) <span style="font-size:0.6em;color:#3B82F6;font-weight:400">[Practice Agent]</span></h3><p style="color:#4B5563;font-size:.78rem;margin-bottom:10px">Evaluate understanding instantly. Scores are tracked in Progress.</p>
     ${C.mcqs.map((m, qi) => `<div class="mcq-card" id="mcq${qi}"><div class="mcq-q">Q${qi + 1}. ${m.q}</div><div class="mcq-opts">${m.o.map((o, oi) => `<div class="mcq-opt" onclick="checkMCQ(${qi},${oi},${m.a})">${String.fromCharCode(65 + oi)}) ${o}</div>`).join('')}</div><div class="mcq-exp" id="exp${qi}">💡 Feedback: ${m.e}</div></div>`).join('')}
     <div class="mcq-score-box" id="mcqSc" style="display:none"><div class="mcq-score-big" id="mcqScN"></div></div>`;
 }
@@ -228,29 +238,29 @@ window.checkMCQ = function (qi, oi, ans) {
     }
 };
 
-function renderShortAns(C) { document.getElementById('tp-shortans').innerHTML = `<h3>✍️ Short-Answer Questions</h3>${C.sa.map((s, i) => `<div class="sa-card"><div class="sa-q">Q${i + 1}. ${s.q}</div><span class="sa-toggle" onclick="this.nextElementSibling.classList.toggle('show')">Show Answer →</span><div class="sa-ans">${s.a}</div></div>`).join('')}`; }
-function renderFormulas(C) { document.getElementById('tp-formulas').innerHTML = `<h3>⚡ Formulas & Concepts</h3>${C.formulas.map(f => `<div class="f-card"><h4>${f.t}</h4>${f.items.map(i => `<div class="f-item">${i}</div>`).join('')}</div>`).join('')}`; }
-function renderRevision(C) { document.getElementById('tp-revision').innerHTML = `<h3>📝 Revision Summary</h3><div class="rev-box"><p>${C.revision}</p></div>`; }
-function renderStrategy(C) { document.getElementById('tp-strategy').innerHTML = `<h3>🛠️ Problem-Solving Strategy</h3>${C.strategy.map((s, i) => `<div class="strat-item"><div class="strat-n">${i + 1}</div><div class="strat-text">${s.t}</div></div>`).join('')}`; }
-function renderPredict(imp, conf, C, rating) { document.getElementById('tp-predict').innerHTML = `<h3>📈 Performance Prediction</h3><div class="pred-hero"><div class="pred-big"><span class="pred-plus">+${imp}%</span></div><div class="pred-sub">Expected gain · ${conf}% confidence</div></div>`; }
+function renderShortAns(C) { document.getElementById('tp-shortans').innerHTML = `<h3>✍️ Short-Answer Questions <span style="font-size:0.6em;color:#3B82F6;font-weight:400">[Practice Agent]</span></h3>${C.sa.map((s, i) => `<div class="sa-card"><div class="sa-q">Q${i + 1}. ${s.q}</div><span class="sa-toggle" onclick="this.nextElementSibling.classList.toggle('show')">Show Answer →</span><div class="sa-ans">${s.a}</div></div>`).join('')}`; }
+function renderFormulas(C) { document.getElementById('tp-formulas').innerHTML = `<h3>⚡ Formulas & Concepts <span style="font-size:0.6em;color:#8B5CF6;font-weight:400">[Tutor Agent]</span></h3>${C.formulas.map(f => `<div class="f-card"><h4>${f.t}</h4>${f.items.map(i => `<div class="f-item">${i}</div>`).join('')}</div>`).join('')}`; }
+function renderRevision(C) { document.getElementById('tp-revision').innerHTML = `<h3>📝 Revision Summary <span style="font-size:0.6em;color:#F59E0B;font-weight:400">[Exam Agent]</span></h3><div class="rev-box"><p>${C.revision}</p></div>`; }
+function renderStrategy(C) { document.getElementById('tp-strategy').innerHTML = `<h3>🛠️ Problem-Solving Strategy <span style="font-size:0.6em;color:#8B5CF6;font-weight:400">[Tutor Agent]</span></h3>${C.strategy.map((s, i) => `<div class="strat-item"><div class="strat-n">${i + 1}</div><div class="strat-text">${s.t}</div></div>`).join('')}`; }
+function renderPredict(imp, conf, C, rating) { document.getElementById('tp-predict').innerHTML = `<h3>📈 Performance Prediction <span style="font-size:0.6em;color:#F59E0B;font-weight:400">[Exam Agent]</span></h3><div class="pred-hero"><div class="pred-big"><span class="pred-plus">+${imp}%</span></div><div class="pred-sub">Expected gain · ${conf}% confidence</div></div>`; }
 
 function renderCareer(career) {
     const c = CAREERS[career]; if (!c) return;
-    document.getElementById('tp-career').innerHTML = `<h3>🎓 Career Roadmap: ${career}</h3>
+    document.getElementById('tp-career').innerHTML = `<h3>🎓 Career Roadmap: ${career} <span style="font-size:0.6em;color:#EC4899;font-weight:400">[Career Agent]</span></h3>
     <h4>🛠️ Required Skills</h4><div class="concept-badges">${c.skills.map(s => `<span class="cbadge cb-f">✅ ${s}</span>`).join('')}</div>
     <h4>📚 Recommended Courses</h4><div class="career-list">${c.courses.map((r, i) => `<div class="strat-item"><div class="strat-n">${i + 1}</div><div class="strat-text">${r}</div></div>`).join('')}</div>`;
 }
 
 function renderResearch(branch) {
     const r = RESEARCH_GUIDE[branch] || RESEARCH_GUIDE['CSE'];
-    document.getElementById('tp-research').innerHTML = `<h3>🔬 Research Guidance — ${branch}</h3>
+    document.getElementById('tp-research').innerHTML = `<h3>🔬 Research Guidance — ${branch} <span style="font-size:0.6em;color:#06B6D4;font-weight:400">[Research Agent]</span></h3>
     <h4>📌 Suggested Research Topics</h4><div class="career-list">${r.topics.map((t, i) => `<div class="strat-item"><div class="strat-n">${i + 1}</div><div class="strat-text">${t}</div></div>`).join('')}</div>
     <h4>📰 Target Journals</h4><div class="concept-badges">${r.journals.map(j => `<span class="cbadge cb-f">📰 ${j}</span>`).join('')}</div>`;
 }
 
 function renderCoding(sub) {
     const c = CODING[sub]; if (!c) return;
-    document.getElementById('tp-coding').innerHTML = `<h3>💻 Coding Playground</h3>
+    document.getElementById('tp-coding').innerHTML = `<h3>💻 Coding Playground <span style="font-size:0.6em;color:#3B82F6;font-weight:400">[Practice Agent]</span></h3>
     <div class="info-box ib-info">Language: <strong>${c.lang.toUpperCase()}</strong></div>
     <h4>Code Example</h4><pre class="code-block"><code>${c.ex}</code></pre>
     <h4>Exercise</h4><p style="margin-bottom:10px">${c.q}</p>
@@ -262,7 +272,7 @@ function renderProgress() {
     const avgScore = tr.scores.length ? Math.round(tr.scores.reduce((a, b) => a + b, 0) / tr.scores.length) : 0;
     const wf = Object.entries(tr.weak).sort((a, b) => b[1] - a[1]).map(x => x[0]).slice(0, 3);
 
-    document.getElementById('tp-progress').innerHTML = `<h3>📊 Adaptive Progress</h3>
+    document.getElementById('tp-progress').innerHTML = `<h3>📊 Adaptive Progress <span style="font-size:0.6em;color:#10B981;font-weight:400">[Coordinator]</span></h3>
     <div class="ov-grid">
       <div class="ov-card"><div class="ov-icon">🔄</div><div class="ov-val">${tr.sessions}</div><div class="ov-lbl">Sessions Generated</div></div>
       <div class="ov-card"><div class="ov-icon">🎯</div><div class="ov-val">${avgScore}%</div><div class="ov-lbl">Avg MCQ Score</div></div>
