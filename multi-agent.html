@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillAI Multi-Agent Platform | Team APEIRON</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #080B16 0%, #0F1629 100%);
+            color: #E8ECF4;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* === HEADER === */
+        header {
+            background: rgba(15, 22, 41, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+            padding: 20px 0;
+            margin-bottom: 30px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #7C3AED, #2563EB, #06B6D4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #E8ECF4;
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .nav-links a:hover {
+            background: rgba(124, 58, 237, 0.2);
+            color: #7C3AED;
+        }
+
+        /* === MAIN GRID === */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 20px;
+        }
+
+        /* === SIDEBAR INPUT === */
+        .sidebar {
+            background: rgba(15, 22, 41, 0.6);
+            border: 1px solid rgba(124, 58, 237, 0.2);
+            border-radius: 12px;
+            padding: 24px;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .sidebar h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #7C3AED;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #CBD5E1;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 6px;
+            color: #E8ECF4;
+            font-size: 13px;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #7C3AED;
+            background: rgba(124, 58, 237, 0.1);
+        }
+
+        .form-group select option {
+            background: #080B16;
+            color: #E8ECF4;
+        }
+
+        .slider-container {
+            margin: 15px 0;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: linear-gradient(to right, #F87171, #FBBF24, #34D399);
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #7C3AED;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(124, 58, 237, 0.5);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #7C3AED;
+            cursor: pointer;
+            border: none;
+        }
+
+        .range-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #64748B;
+            margin-top: 6px;
+        }
+
+        .btn-generate {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #7C3AED, #2563EB);
+            border: none;
+            color: white;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(124, 58, 237, 0.4);
+        }
+
+        .btn-generate:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* === MAIN CONTENT === */
+        .content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* === AGENT TABS === */
+        .agent-tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            background: rgba(15, 22, 41, 0.6);
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(124, 58, 237, 0.2);
+        }
+
+        .agent-tab {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(124, 58, 237, 0.2);
+            color: #CBD5E1;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .agent-tab:hover,
+        .agent-tab.active {
+            background: rgba(124, 58, 237, 0.3);
+            border-color: #7C3AED;
+            color: #7C3AED;
+        }
+
+        /* === RESPONSE PANEL === */
+        .response-panel {
+            background: rgba(15, 22, 41, 0.6);
+            border: 1px solid rgba(124, 58, 237, 0.2);
+            border-radius: 12px;
+            padding: 24px;
+            min-height: 400px;
+        }
+
+        .response-panel.hidden {
+            display: none;
+        }
+
+        .response-panel h3 {
+            color: #7C3AED;
+            margin-bottom: 16px;
+            font-size: 18px;
+        }
+
+        .response-panel h4 {
+            color: #06B6D4;
+            margin: 16px 0 12px 0;
+            font-size: 15px;
+        }
+
+        .response-section {
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(124, 58, 237, 0.1);
+        }
+
+        .response-section:last-child {
+            border-bottom: none;
+        }
+
+        .question-card {
+            background: rgba(124, 58, 237, 0.1);
+            border-left: 3px solid #7C3AED;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 6px;
+        }
+
+        .question-card strong {
+            color: #06B6D4;
+        }
+
+        .mcq-option {
+            padding: 10px;
+            margin: 6px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mcq-option:hover {
+            background: rgba(124, 58, 237, 0.2);
+        }
+
+        .skill-list {
+            list-style: none;
+        }
+
+        .skill-list li {
+            padding: 10px 0;
+            padding-left: 24px;
+            position: relative;
+        }
+
+        .skill-list li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #7C3AED;
+            font-weight: bold;
+        }
+
+        /* === LOADING STATE === */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 300px;
+            font-size: 14px;
+            color: #64748B;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(124, 58, 237, 0.2);
+            border-top: 3px solid #7C3AED;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 12px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* === FOOTER === */
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            border-top: 1px solid rgba(124, 58, 237, 0.2);
+            color: #64748B;
+            font-size: 13px;
+            margin-top: 40px;
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: relative;
+                top: auto;
+            }
+        }
+
+        /* === ANIMATIONS === */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .response-panel {
+            animation: slideIn 0.3s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    🧠 SkillAI
+                    <span style="font-size: 12px; color: #64748B;">Multi-Agent</span>
+                </div>
+                <div class="nav-links">
+                    <a href="#" onclick="showIntro()">About</a>
+                    <a href="#" onclick="showAgents()">Agents</a>
+                    <a href="index.html" style="color: #34D399;">← Original App</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <div class="container">
+        <div class="main-grid">
+            <!-- SIDEBAR INPUT -->
+            <div class="sidebar">
+                <h2>🎯 Student Profile</h2>
+                
+                <div class="form-group">
+                    <label>Academic Level</label>
+                    <select id="academicLevel" onchange="updateUI()">
+                        <option value="">Select Level</option>
+                        <option value="undergraduate">Undergraduate (Sem 1-8)</option>
+                        <option value="postgraduate">Postgraduate (M.Tech/MS)</option>
+                        <option value="doctoral">Doctoral (PhD)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Engineering Branch</label>
+                    <select id="branch" onchange="updateUI()">
+                        <option value="">Select Branch</option>
+                        <option value="CSE">Computer Science</option>
+                        <option value="ECE">Electronics & Communication</option>
+                        <option value="ME">Mechanical Engineering</option>
+                        <option value="EEE">Electrical Engineering</option>
+                        <option value="CE">Civil Engineering</option>
+                        <option value="AIDS">AI & Data Science</option>
+                        <option value="IT">Information Technology</option>
+                        <option value="BME">Biomedical Engineering</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Semester / Year</label>
+                    <select id="semester">
+                        <option value="">Select Semester</option>
+                        <option value="1">1st Semester</option>
+                        <option value="2">2nd Semester</option>
+                        <option value="3">3rd Semester</option>
+                        <option value="4">4th Semester</option>
+                        <option value="5">5th Semester</option>
+                        <option value="6">6th Semester</option>
+                        <option value="7">7th Semester</option>
+                        <option value="8">8th Semester</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Your Query / Goal</label>
+                    <textarea id="studentQuery" placeholder="E.g., 'Teach me binary trees' or 'Help me prepare for exam'" 
+                        style="height: 80px; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(124,58,237,0.3); border-radius: 6px; color: #E8ECF4; font-family: inherit; resize: vertical;"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Proficiency Level</label>
+                    <div class="slider-container">
+                        <input type="range" id="proficiency" min="1" max="5" value="3">
+                        <div class="range-labels">
+                            <span>1 · Beginner</span>
+                            <span>3 · Intermediate</span>
+                            <span>5 · Advanced</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Career Goal</label>
+                    <select id="careerGoal">
+                        <option value="">Select Career Path (Optional)</option>
+                        <option value="software_engineer">Software Engineer</option>
+                        <option value="data_scientist">Data Scientist</option>
+                        <option value="ai_engineer">AI Engineer</option>
+                        <option value="vlsi_engineer">VLSI Design Engineer</option>
+                        <option value="embedded_engineer">Embedded Systems Engineer</option>
+                        <option value="cybersecurity_engineer">Cybersecurity Engineer</option>
+                        <option value="mechanical_engineer">Mechanical Design Engineer</option>
+                        <option value="structural_engineer">Structural Engineer</option>
+                    </select>
+                </div>
+
+                <button class="btn-generate" id="generateBtn" onclick="generateResponse()">
+                    🚀 Analyze & Generate Response
+                </button>
+            </div>
+
+            <!-- MAIN CONTENT AREA -->
+            <div class="content">
+                <!-- INTRO SECTION -->
+                <div id="introSection" class="response-panel">
+                    <h3>🤖 SkillAI Multi-Agent System</h3>
+                    <div class="response-section">
+                        <p><strong>Welcome to SkillAI!</strong> A full-scale AI-powered academic learning and career development platform designed for engineering students from Undergraduate through Doctoral levels.</p>
+                    </div>
+
+                    <h4>📊 Our 7 Specialized Agents</h4>
+                    <div class="response-section">
+                        <ul class="skill-list">
+                            <li><strong>🧠 Coordinator Agent:</strong> Routes your requests to the right expert</li>
+                            <li><strong>📚 Tutor Agent:</strong> Explains concepts step-by-step with examples</li>
+                            <li><strong>✏️ Practice Agent:</strong> Generates MCQs, problems, and feedback</li>
+                            <li><strong>📖 Exam Agent:</strong> Prepares you for university exams</li>
+                            <li><strong>🎯 Career Agent:</strong> Guides career paths and skill development</li>
+                            <li><strong>💻 Coding Agent:</strong> Teaches programming (Python, Java, C++)</li>
+                            <li><strong>🔬 Research Agent:</strong> Supports postgrad and PhD research</li>
+                        </ul>
+                    </div>
+
+                    <h4>🎓 Coverage</h4>
+                    <div class="response-section">
+                        <p><strong>Branches:</strong> CSE, ECE, ME, EEE, CE, AI&DS, IT, BME</p>
+                        <p><strong>Levels:</strong> Undergraduate (Sem 1-8) → M.Tech/MS → PhD</p>
+                        <p><strong>Topics:</strong> All university subjects, coding, exams, research</p>
+                    </div>
+
+                    <h4>🚀 How to Use</h4>
+                    <div class="response-section">
+                        <ol style="margin-left: 20px;">
+                            <li>Fill in your profile (branch, semester, career goal)</li>
+                            <li>Enter your query or learning goal</li>
+                            <li>Click "Analyze & Generate Response"</li>
+                            <li>The Coordinator Agent will route to appropriate agents</li>
+                            <li>Explore multiple agent responses using tabs</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- AGENT TABS -->
+                <div id="agentTabsContainer" style="display: none;">
+                    <div class="agent-tabs">
+                        <button class="agent-tab active" onclick="switchAgent('coordinator')">📊 Coordinator</button>
+                        <button class="agent-tab" onclick="switchAgent('tutor')">📚 Tutor</button>
+                        <button class="agent-tab" onclick="switchAgent('practice')">✏️ Practice</button>
+                        <button class="agent-tab" onclick="switchAgent('exam')">📖 Exam Prep</button>
+                        <button class="agent-tab" onclick="switchAgent('career')">🎯 Career</button>
+                        <button class="agent-tab" onclick="switchAgent('coding')">💻 Coding</button>
+                        <button class="agent-tab" onclick="switchAgent('research')">🔬 Research</button>
+                    </div>
+                </div>
+
+                <!-- RESPONSE PANELS -->
+                <div id="coordinatorPanel" class="response-panel"></div>
+                <div id="tutorPanel" class="response-panel hidden"></div>
+                <div id="practicePanel" class="response-panel hidden"></div>
+                <div id="examPanel" class="response-panel hidden"></div>
+                <div id="careerPanel" class="response-panel hidden"></div>
+                <div id="codingPanel" class="response-panel hidden"></div>
+                <div id="researchPanel" class="response-panel hidden"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>SkillAI Multi-Agent Platform | Team APEIRON | AMD Slingshot Hackathon 2026</p>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script src="agents.js"></script>
+    <script src="database.js"></script>
+    <script>
+        let coordinator = null;
+        let currentAgent = 'coordinator';
+
+        // Initialize agents with error handling
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Initializing SkillAI Multi-Agent Platform...');
+            
+            // Check if agents are loaded
+            if (typeof CoordinatorAgent !== 'undefined') {
+                try {
+                    coordinator = new CoordinatorAgent();
+                    console.log('✅ Coordinator Agent initialized successfully');
+                } catch (error) {
+                    console.error('❌ Error initializing coordinator:', error);
+                }
+            } else {
+                console.warn('⚠️ CoordinatorAgent not found - agents.js may not have loaded');
+            }
+            
+            // Check if database is loaded
+            if (typeof SKILL_AI_DATABASE !== 'undefined') {
+                console.log('✅ Database loaded with', Object.keys(SKILL_AI_DATABASE).length, 'branches');
+            } else {
+                console.warn('⚠️ SKILL_AI_DATABASE not found - database.js may not have loaded');
+            }
+        });
+
+        function getStudentProfile() {
+            return {
+                level: document.getElementById('academicLevel').value,
+                branch: document.getElementById('branch').value,
+                semester: document.getElementById('semester').value,
+                proficiency: document.getElementById('proficiency').value,
+                careerGoal: document.getElementById('careerGoal').value
+            };
+        }
+
+        function generateResponse() {
+            try {
+                const query = document.getElementById('studentQuery').value;
+                const profile = getStudentProfile();
+
+                if (!query) {
+                    alert('Please enter a query or learning goal');
+                    return;
+                }
+
+                if (!profile.branch) {
+                    alert('Please select your engineering branch');
+                    return;
+                }
+
+                // Show loading state
+                const tabContainer = document.getElementById('agentTabsContainer');
+                const introSection = document.getElementById('introSection');
+                
+                if (tabContainer) tabContainer.style.display = 'block';
+                if (introSection) introSection.style.display = 'none';
+                showLoading();
+
+                console.log('📝 Processing query:', query);
+                console.log('👤 Student profile:', profile);
+
+                // Simulate async processing
+                setTimeout(() => {
+                    try {
+                        if (coordinator) {
+                            console.log('🤖 Coordinator analyzing request...');
+                            const responses = coordinator.analyzeRequest(query, profile);
+                            console.log('📊 Responses generated:', responses);
+                            displayResponses(responses, profile);
+                        } else {
+                            console.warn('⚠️ Coordinator not initialized, using demo response');
+                            displayDemoResponse(query, profile);
+                        }
+                    } catch (error) {
+                        console.error('❌ Error processing response:', error);
+                        alert('Error processing your query. Check console for details.');
+                    }
+                }, 1000);
+            } catch (error) {
+                console.error('❌ Error in generateResponse:', error);
+                alert('An error occurred. Please check the browser console.');
+            }
+        }
+
+        function displayResponses(responses, profile) {
+            try {
+                // Coordinator Response
+                displayCoordinatorResponse(responses);
+                
+                // Tutor Response
+                if (responses.response && responses.response.tutor) {
+                    displayTutorResponse(responses.response.tutor);
+                }
+
+                // Practice Response
+                if (responses.response && responses.response.practice) {
+                    displayPracticeResponse(responses.response.practice);
+                }
+
+                // Exam Response
+                if (responses.response && responses.response.exam) {
+                    displayExamResponse(responses.response.exam);
+                }
+
+                // Career Response
+                if (responses.response && responses.response.career) {
+                    displayCareerResponse(responses.response.career);
+                }
+
+                // Coding Response
+                if (responses.response && responses.response.coding) {
+                    displayCodingResponse(responses.response.coding);
+                }
+
+                // Research Response (only for postgrad)
+                if (profile.level === 'postgraduate' || profile.level === 'doctoral') {
+                    if (responses.response && responses.response.research) {
+                        displayResearchResponse(responses.response.research);
+                    }
+                }
+                
+                // Hide loading spinner
+                hideLoading();
+            } catch (error) {
+                console.error('❌ Error displaying responses:', error);
+                alert('Error displaying responses. Check console.');
+                hideLoading();
+            }
+        }
+
+        function displayCoordinatorResponse(responses) {
+            const html = `
+                <h3>📊 Coordinator Analysis</h3>
+                <div class="response-section">
+                    <h4>Detected Intent</h4>
+                    <p><strong>${responses.intent.replace(/_/g, ' ').toUpperCase()}</strong></p>
+                </div>
+                <div class="response-section">
+                    <h4>Routing to Agents</h4>
+                    <ul class="skill-list">
+                        ${responses.agents.map(a => `<li>${getAgentEmoji(a)} ${getAgentName(a)}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="response-section">
+                    <p style="color: #64748B; font-size: 13px;">Click on agent tabs above to view detailed responses from each specialized agent.</p>
+                </div>
+            `;
+            document.getElementById('coordinatorPanel').innerHTML = html;
+            document.getElementById('coordinatorPanel').classList.remove('hidden');
+        }
+
+        function displayTutorResponse(tutorResp) {
+            const html = `
+                <h3>📚 Tutor Agent</h3>
+                <div class="response-section">
+                    <h4>Concept Explanation</h4>
+                    <p>${tutorResp.explanation}</p>
+                </div>
+                <div class="response-section">
+                    <h4>Key Points</h4>
+                    <ul class="skill-list">
+                        ${tutorResp.keyPoints.map(p => `<li>${p}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="response-section">
+                    <h4>📌 Example</h4>
+                    <pre style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 12px;">${tutorResp.example}</pre>
+                </div>
+                <div class="response-section">
+                    <h4>📝 Exam Notes</h4>
+                    <ul class="skill-list">
+                        ${(tutorResp.examNotes || []).map(n => `<li>${n}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="response-section">
+                    <h4>🔗 Next Topics to Study</h4>
+                    <ul class="skill-list">
+                        ${tutorResp.nextTopics.map(t => `<li>${t}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+            document.getElementById('tutorPanel').innerHTML = html;
+        }
+
+        function displayPracticeResponse(practiceResp) {
+            const html = `
+                <h3>✏️ Practice Agent</h3>
+                <div class="response-section">
+                    <h4>Multiple Choice Questions (5)</h4>
+                    ${practiceResp.mcqs.map((q, i) => `
+                        <div class="question-card">
+                            <strong>Q${i + 1}. ${q.q}</strong>
+                            ${q.options ? q.options.map(o => `<div class="mcq-option">○ ${o}</div>`).join('') : ''}
+                            <div style="color: #34D399; margin-top: 8px; font-size: 12px;">✓ Answer: ${String.fromCharCode(65 + q.answer)}</div>
+                            <div style="color: #64748B; margin-top: 6px; font-size: 12px; font-style: italic;">${q.explanation}</div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="response-section">
+                    <h4>Short Answer Questions (3)</h4>
+                    ${practiceResp.shortAnswer.map((q, i) => `
+                        <div class="question-card">
+                            <strong>Q${i + 1}. ${q.q}</strong>
+                            <div style="color: #CBD5E1; margin-top: 8px; font-size: 12px;">Hints: ${q.hints}</div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="response-section">
+                    <h4>Numerical Problems (2)</h4>
+                    ${practiceResp.numerical.map((p, i) => `
+                        <div class="question-card">
+                            <strong>P${i + 1}. ${p.q}</strong>
+                            <div style="color: #34D399; margin: 8px 0; font-size: 12px;">Solution: ${p.solution}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            document.getElementById('practicePanel').innerHTML = html;
+        }
+
+        function displayExamResponse(examResp) {
+            const html = `
+                <h3>📖 Exam Preparation Agent</h3>
+                <div class="response-section">
+                    <h4>Important Topics (Weighted by Exam Frequency)</h4>
+                    <table style="width: 100%; font-size: 13px;">
+                        <tr style="border-bottom: 1px solid rgba(124,58,237,0.2);">
+                            <th style="text-align: left; padding: 8px;">Topic</th>
+                            <th style="text-align: center; padding: 8px;">Weight</th>
+                            <th style="text-align: center; padding: 8px;">Frequency</th>
+                        </tr>
+                        ${(examResp.importantTopics || []).map(t => `
+                            <tr style="border-bottom: 1px solid rgba(124,58,237,0.1);">
+                                <td style="padding: 8px;">${t.topic}</td>
+                                <td style="text-align: center; padding: 8px;"><span style="background: rgba(124,58,237,0.3); padding: 2px 6px; border-radius: 3px;">${t.weight}</span></td>
+                                <td style="text-align: center; padding: 8px;"><span style="color: #F87171;">${t.frequency}</span></td>
+                            </tr>
+                        `).join('')}
+                    </table>
+                </div>
+                <div class="response-section">
+                    <h4>Frequently Asked Questions</h4>
+                    <ul class="skill-list">
+                        ${(examResp.frequentlyAsked || []).map(faq => `<li>${faq}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="response-section">
+                    <h4>📝 Quick Revision Checklist</h4>
+                    <pre style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 6px; font-size: 11px; line-height: 1.8; white-space: pre-wrap;">${examResp.revisionNotes}</pre>
+                </div>
+                <div class="response-section">
+                    <h4>💡 Exam Writing Tips</h4>
+                    <ul class="skill-list">
+                        ${(examResp.examTips || []).map(tip => `<li>${tip}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+            document.getElementById('examPanel').innerHTML = html;
+        }
+
+        function displayCareerResponse(careerResp) {
+            const html = `
+                <h3>🎯 Career Guidance Agent</h3>
+                <div class="response-section">
+                    <h4>Career Path</h4>
+                    <p><strong>${careerResp.careerPath.description}</strong></p>
+                    <p style="margin-top: 8px; color: #CBD5E1; font-size: 13px;">Growth: ${careerResp.careerPath.growth}</p>
+                    <p style="margin-top: 8px; color: #CBD5E1; font-size: 13px;">Salary: ${careerResp.careerPath.salary}</p>
+                </div>
+                <div class="response-section">
+                    <h4>Required Skills</h4>
+                    <ul class="skill-list">
+                        ${careerResp.requiredSkills.map(s => `<li>${s}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="response-section">
+                    <h4>Key University Subjects</h4>
+                    <ul class="skill-list">
+                        ${careerResp.universitySubjects.map(s => `<li>${s}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="response-section">
+                    <h4>Project Ideas</h4>
+                    <ul class="skill-list">
+                        ${careerResp.projects.slice(0, 3).map(p => `<li>${p}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+            document.getElementById('careerPanel').innerHTML = html;
+        }
+
+        function displayCodingResponse(codingResp) {
+            const html = `
+                <h3>💻 Coding Assistant Agent</h3>
+                <div class="response-section">
+                    <h4>Algorithm: ${codingResp.algorithmExplanation.split('Algorithm:')[1].split('\\n')[0]}</h4>
+                    <p>${codingResp.algorithmExplanation}</p>
+                </div>
+                <div class="response-section">
+                    <h4>Code Example (${codingResp.language})</h4>
+                    <pre style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 11px; line-height: 1.6;">${codingResp.codeExample}</pre>
+                </div>
+                <div class="response-section">
+                    <h4>Debug Tips</h4>
+                    <ul class="skill-list">
+                        ${codingResp.debugTips.map(tip => `<li>${tip}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="response-section">
+                    <h4>Interview Questions</h4>
+                    <ul class="skill-list">
+                        ${codingResp.interviewQuestions.map(q => `<li>${q}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+            document.getElementById('codingPanel').innerHTML = html;
+        }
+
+        function displayResearchResponse(researchResp) {
+            const html = `
+                <h3>🔬 Research Assistant Agent</h3>
+                <div class="response-section">
+                    <h4>Suggested Research Topics</h4>
+                    <ul class="skill-list">
+                        ${(researchResp.topicSuggestions || []).map(t => `<li>${t}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="response-section">
+                    <h4>Recommended Databases for Literature</h4>
+                    <ul class="skill-list">
+                        ${(researchResp.literatureReview?.databases || []).map(db => `<li>${db}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="response-section">
+                    <h4>Paper Structure</h4>
+                    <ol style="margin-left: 20px;">
+                        ${(researchResp.paperStructure?.sections || []).map(s => `<li style="margin-bottom: 6px;">${s}</li>`).join('')}
+                    </ol>
+                </div>
+                <div class="response-section">
+                    <h4>Top Conferences/Journals</h4>
+                    <ul class="skill-list">
+                        ${(researchResp.venues?.topConferences || []).map(v => `<li>${v}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="response-section">
+                    <h4>✓ Research Ethics Checklist</h4>
+                    <ul class="skill-list">
+                        ${(researchResp.ethicsChecklist || []).map(e => `<li>${e}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+            document.getElementById('researchPanel').innerHTML = html;
+        }
+
+        function displayDemoResponse(query, profile) {
+            const html = `
+                <h3>📊 Demo Response (Live Agent System Coming Soon)</h3>
+                <div class="response-section">
+                    <h4>Your Query</h4>
+                    <p>"${query}"</p>
+                </div>
+                <div class="response-section">
+                    <h4>Your Profile</h4>
+                    <ul class="skill-list">
+                        <li><strong>Branch:</strong> ${profile.branch}</li>
+                        <li><strong>Level:</strong> ${profile.level}</li>
+                        <li><strong>Semester:</strong> ${profile.semester}</li>
+                        <li><strong>Career Goal:</strong> ${profile.careerGoal || 'Not specified'}</li>
+                    </ul>
+                </div>
+                <div class="response-section">
+                    <p style="color: #64748B;">The agent system is loaded and ready! Responses will be generated based on your profile and the appropriate agents will provide tailored assistance.</p>
+                </div>
+            `;
+            document.getElementById('coordinatorPanel').innerHTML = html;
+            document.getElementById('coordinatorPanel').classList.remove('hidden');
+        }
+
+        function switchAgent(agent) {
+            // Hide all panels
+            document.querySelectorAll('.response-panel').forEach(p => p.classList.add('hidden'));
+            
+            // Remove active class from tabs
+            document.querySelectorAll('.agent-tab').forEach(t => t.classList.remove('active'));
+
+            // Show selected panel
+            const panelMap = {
+                'coordinator': 'coordinatorPanel',
+                'tutor': 'tutorPanel',
+                'practice': 'practicePanel',
+                'exam': 'examPanel',
+                'career': 'careerPanel',
+                'coding': 'codingPanel',
+                'research': 'researchPanel'
+            };
+
+            document.getElementById(panelMap[agent]).classList.remove('hidden');
+            event.target.classList.add('active');
+            currentAgent = agent;
+        }
+
+        function showLoading() {
+            document.getElementById('coordinatorPanel').innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <div>Analyzing request and generating response...</div>
+                </div>
+            `;
+            document.getElementById('coordinatorPanel').classList.remove('hidden');
+        }
+
+        function showIntro() {
+            document.getElementById('introSection').style.display = 'block';
+            document.getElementById('agentTabsContainer').style.display = 'none';
+            document.querySelectorAll('.response-panel').forEach(p => p.classList.add('hidden'));
+        }
+
+        function showAgents() {
+            alert('SkillAI runs 7 specialized agents:\n\n📚 Tutor - Explains concepts\n✏️ Practice - Generates questions\n📖 Exam - Exam prep\n🎯 Career - Career guidance\n💻 Coding - Programming help\n🔬 Research - Research support\n📊 Coordinator - Routes requests\n\nClick "Analyze & Generate Response" to see them in action!');
+        }
+
+        function getAgentEmoji(agent) {
+            const emojis = {
+                'tutor': '📚',
+                'practice': '✏️',
+                'exam': '📖',
+                'career': '🎯',
+                'coding': '💻',
+                'research': '🔬'
+            };
+            return emojis[agent] || '🤖';
+        }
+
+        function getAgentName(agent) {
+            const names = {
+                'tutor': 'Tutor Agent',
+                'practice': 'Practice Agent',
+                'exam': 'Exam Prep Agent',
+                'career': 'Career Agent',
+                'coding': 'Coding Agent',
+                'research': 'Research Agent'
+            };
+            return names[agent] || agent;
+        }
+
+        function hideLoading() {
+            const loader = document.querySelector('.loading-spinner');
+            if (loader) {
+                loader.style.display = 'none';
+            }
+        }
+
+        function switchAgent(agentName) {
+            currentAgent = agentName;
+            
+            // Hide all panels
+            document.querySelectorAll('[id*="Panel"]').forEach(panel => {
+                panel.classList.add('hidden');
+            });
+            
+            // Show selected panel
+            const panelId = agentName + 'Panel';
+            const panel = document.getElementById(panelId);
+            if (panel) {
+                panel.classList.remove('hidden');
+            }
+            
+            // Update active tab
+            document.querySelectorAll('.agent-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function updateUI() {
+            // Dynamically update UI based on selections
+        }
+    </script>
+</body>
+</html>

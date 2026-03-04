@@ -109,7 +109,27 @@ function initForm() {
         }
         await sleep(300);
 
-        const C = getContent(sub, level), { improvement, confidence } = calcImprovement(rating, weak.length, scores), mode = getAdaptiveMode(rating);
+        let C = getContent(sub, level); // Fallback mock data
+        try {
+            const [tutorData, practiceData, coord] = await Promise.all([
+                fetchTutorExplanation(sub, level, rating, weak, uni),
+                fetchPracticeSession(sub, level),
+                askCoordinator(sub, { level, rating })
+            ]);
+
+            if (tutorData && practiceData) {
+                // Merge live AI data over fallback data
+                C = { ...C, ...tutorData, ...practiceData };
+                console.log("Successfully fetched live AI data from Tutor and Practice Agents!");
+            } else {
+                console.warn("One or more AI agents failed to return valid JSON. Using simulated fallback data.");
+            }
+        } catch (e) {
+            console.error("Live AI Generation Failed:", e);
+        }
+
+        const { improvement, confidence } = calcImprovement(rating, weak.length, scores);
+        const mode = getAdaptiveMode(rating);
 
         renderOverview(sub, rating, weak, scores, improvement, confidence, mode, C, level, career, uni);
         renderPlan(C, weak, rating); renderQuestions(C, rating); renderMCQs(C); renderShortAns(C); renderFormulas(C); renderRevision(C); renderStrategy(C); renderPredict(improvement, confidence, C, rating);
