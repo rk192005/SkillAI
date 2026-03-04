@@ -1,0 +1,13 @@
+// === Career Roadmaps ===
+const CAREERS = {
+    'Software Engineer': { skills: ['DSA', 'System Design', 'OOP', 'Git', 'SQL', 'REST APIs', 'CI/CD'], courses: ['CS50', 'Neetcode 150', 'System Design Primer', 'Clean Code'], projects: ['Build REST API with auth', 'Full-stack CRUD app', 'CLI tool in Go/Rust', 'Open-source contribution'], internship: ['Google STEP', 'Microsoft Engage', 'Amazon SDE Intern', 'Flipkart Grid'], interview: ['DSA (Arrays, Trees, Graphs, DP)', 'System Design', 'OOP principles', 'Behavioral (STAR method)'] },
+    'Data Scientist': { skills: ['Python', 'Statistics', 'SQL', 'ML (scikit-learn)', 'Deep Learning', 'Data Viz', 'Pandas/NumPy'], courses: ['Andrew Ng ML', 'Fast.ai', 'Kaggle courses', 'Statistics 110 Harvard'], projects: ['EDA on real dataset', 'ML classification pipeline', 'NLP sentiment analysis'], internship: ['Google AI', 'Amazon ML Intern', 'Fractal', 'Mu Sigma'], interview: ['Probability & Statistics', 'ML algorithms', 'SQL queries', 'Case studies'] },
+    'AI Engineer': { skills: ['Python', 'PyTorch/TensorFlow', 'NLP', 'Computer Vision', 'MLOps', 'Docker', 'Cloud'], courses: ['Deep Learning Specialization', 'Hugging Face', 'Full Stack Deep Learning'], projects: ['Fine-tune LLM', 'Object detection system', 'RAG chatbot'], internship: ['OpenAI', 'DeepMind', 'NVIDIA AI', 'Microsoft Research'], interview: ['Deep Learning theory', 'Transformer architecture', 'Training optimization', 'System design for ML'] },
+    'VLSI Design Engineer': { skills: ['Verilog/VHDL', 'Digital Design', 'CMOS', 'STA', 'DFT', 'Physical Design', 'Cadence/Synopsys tools'], courses: ['NPTEL Digital VLSI', 'Verilog HDL', 'CMOS VLSI Design', 'STA fundamentals'], projects: ['ALU design in Verilog', 'FIFO design', 'RISC-V processor', 'ASIC flow project'], internship: ['Intel', 'Qualcomm', 'Samsung Semiconductor', 'Texas Instruments'], interview: ['CMOS basics', 'Timing analysis', 'RTL design', 'Verification methods', 'Low power design'] }
+};
+
+// === PhD Research Guidance ===
+const RESEARCH_GUIDE = {
+    CSE: { topics: ['Federated Learning for Edge AI', 'LLM Alignment & Safety', 'Explainable AI in Healthcare', 'Privacy-Preserving ML'], methodology: 'Empirical evaluation with benchmark datasets, ablation studies. Combine theory with experiments.', journals: ['IEEE TPAMI', 'ACM Computing Surveys', 'NeurIPS', 'ICML', 'CVPR'] },
+    ECE: { topics: ['6G Communication Systems', 'Neuromorphic Computing', 'RFIC Design for 5G/6G', 'Energy-Efficient VLSI', 'Reconfigurable Intelligent Surfaces'], methodology: 'Simulation-based (MATLAB/Cadence) + hardware prototype validation. Statistical analysis of BER/SNR.', journals: ['IEEE Trans. on Comm.', 'IEEE JSSC', 'IEEE Trans. on VLSI', 'Nature Electronics'] }
+};
